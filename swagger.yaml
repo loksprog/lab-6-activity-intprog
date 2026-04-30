@@ -1,7 +1,164 @@
 openapi: 3.0.0
 info:
-    title: Node MySQL API
-    version: 1.0.0
-servers:
-    - url: http://localhost:4000
-paths: {}
+  title: Node.js Boilerplate API
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /accounts/register:
+    post:
+      summary: Register a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:       { type: string, example: Mr }
+                firstName:   { type: string, example: John }
+                lastName:    { type: string, example: Doe }
+                email:       { type: string, example: john@example.com }
+                password:    { type: string, example: Pass1234! }
+                confirmPassword: { type: string, example: Pass1234! }
+                acceptTerms: { type: boolean, example: true }
+      responses:
+        '200': { description: Registration successful }
+
+  /accounts/verify-email:
+    post:
+      summary: Verify email with token from email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+      responses:
+        '200': { description: Verification successful }
+
+  /accounts/authenticate:
+    post:
+      summary: Login and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:    { type: string, example: john@example.com }
+                password: { type: string, example: Pass1234! }
+      responses:
+        '200': { description: Returns JWT token }
+
+  /accounts/refresh-token:
+    post:
+      summary: Get new JWT using refresh token cookie
+      responses:
+        '200': { description: Returns new JWT token }
+
+  /accounts/revoke-token:
+    post:
+      summary: Revoke a refresh token
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+      responses:
+        '200': { description: Token revoked }
+
+  /accounts/forgot-password:
+    post:
+      summary: Send password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, example: john@example.com }
+      responses:
+        '200': { description: Check your email }
+
+  /accounts/reset-password:
+    post:
+      summary: Reset password using token from email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:           { type: string }
+                password:        { type: string, example: NewPass1234! }
+                confirmPassword: { type: string, example: NewPass1234! }
+      responses:
+        '200': { description: Password reset successful }
+
+  /accounts:
+    get:
+      summary: Get all accounts (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Returns all accounts }
+
+  /accounts/{id}:
+    get:
+      summary: Get account by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Account details }
+    put:
+      summary: Update account
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName: { type: string }
+                lastName:  { type: string }
+                email:     { type: string }
+      responses:
+        '200': { description: Updated account }
+    delete:
+      summary: Delete account
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Account deleted successfully }
