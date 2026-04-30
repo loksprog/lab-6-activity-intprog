@@ -8,7 +8,7 @@ function validateRequest(req: any, next: any, schema: any) {
     allowUnknown: true, // ignore unknown erros
     stripUnknown: true, // remove unknown erros
   };
-  const { error, value } = schema.valdiate(req.body, options);
+  const { error, value } = schema.validate(req.body, options);
   if (error) {
     next(`Valdiation error: ${error.details.map((x) => x.message).join(", ")}`);
   } else {
