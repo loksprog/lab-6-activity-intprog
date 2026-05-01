@@ -44,7 +44,7 @@ async function authenticate({ email, password, ipAddress }: any) {
 
 async function refreshToken({ token, ipAddress }: any) {
     const refreshToken = await getRefreshToken(token);
-    const account = await refreshToken.getAccount();
+    const account = await db.Account.findByPk(refreshToken.accountId);
 
     const newRefreshToken = generateRefreshToken(account, ipAddress);
     refreshToken.revoked = Date.now();
